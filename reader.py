@@ -65,8 +65,6 @@ def read_atom(r_obj):
     
     if re.match('[0-9]+', token):
         return int(token)
-    elif re.match('[+\-*/%\^]', token):
-        return Symbol(token)
     elif re.match('^"', token):
         if token[-1] != '"':
             raise ValueError("String missing closing quote")
@@ -75,5 +73,4 @@ def read_atom(r_obj):
     elif re.match('^:', token):
         return String(token)
     else:
-        pass
-    
+        return Symbol(token)

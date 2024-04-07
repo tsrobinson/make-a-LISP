@@ -2,25 +2,30 @@ import sys
 import reader
 import printer
 import mal_types
+from env import Env
 
 def READ(x):
     return(reader.read_str(x))
 
-repl_env = {
+repl_env = Env(outer = mal_types.nil)
+
+basic_funcs = {
     '+': lambda a,b: a+b,
     '-': lambda a,b: a-b,
     '*': lambda a,b: a*b,
     '/': lambda a,b: int(a/b),
-    '%': lambda a,b: a-int(a/b)*b,
-    '^': lambda a,b: a**b,
 }
+
+# assign basic math functions to the repl environment
+for key in basic_funcs.keys():
+    repl_env.set(mal_types.Symbol(key), basic_funcs[key])
 
 def eval_ast(ast, repl_env):
     if isinstance(ast, mal_types.Symbol):
         try:
-            return repl_env[ast.name]
+            return repl_env.get(ast.name)
         except KeyError:
-            raise Exception(f"Symbol {ast.name} not found in environment")
+            raise Exception(f"Could not find symbol {ast.name} not found in environment")
     elif isinstance(ast, list):
         if ast.type == "list":
             return mal_types.Array([EVAL(x, repl_env) for x in ast], "(")
@@ -37,12 +42,21 @@ def EVAL(x, repl_env):
     if not isinstance(x, list):
         return eval_ast(x, repl_env)
     elif x in []: # empty list
-        return(x)
+        return x
     else: # non-empty list
-        eval_list = eval_ast(x, repl_env)
         if x.type == "list":
-            eval_0 = eval_list[0]
-            return eval_0(*eval_list[1:])
+            if x[0].name == "def!":
+                repl_env.set(x[1], EVAL(x[2], repl_env))
+            elif x[0].name == "let*":
+                new_env = Env(repl_env)
+                bindings_list = x[1]
+                for i in range(0, len(bindings_list), 2):
+                    new_env.set(bindings_list[i], EVAL(bindings_list[i+1], new_env))
+                return EVAL(x[2], new_env)
+            else:
+                eval_list = eval_ast(x, repl_env)
+                eval_0 = eval_list[0]
+                return eval_0(*eval_list[1:])
         else:
             return eval_ast(x, repl_env)
 
