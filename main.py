@@ -7,19 +7,6 @@ from env import Env
 def READ(x):
     return(reader.read_str(x))
 
-repl_env = Env(outer = mal_types.nil)
-
-basic_funcs = {
-    '+': lambda a,b: a+b,
-    '-': lambda a,b: a-b,
-    '*': lambda a,b: a*b,
-    '/': lambda a,b: int(a/b),
-}
-
-# assign basic math functions to the repl environment
-for key in basic_funcs.keys():
-    repl_env.set(mal_types.Symbol(key), basic_funcs[key])
-
 def eval_ast(ast, repl_env):
     if isinstance(ast, mal_types.Symbol):
         try:
@@ -47,12 +34,37 @@ def EVAL(x, repl_env):
         if x.type == "list":
             if x[0].name == "def!":
                 repl_env.set(x[1], EVAL(x[2], repl_env))
+                
             elif x[0].name == "let*":
                 new_env = Env(repl_env)
                 bindings_list = x[1]
                 for i in range(0, len(bindings_list), 2):
                     new_env.set(bindings_list[i], EVAL(bindings_list[i+1], new_env))
                 return EVAL(x[2], new_env)
+            
+            elif x[0].name == "do":
+                """
+                Evaluate all the elements of the list using eval_ast and return the final evaluated element.
+                """
+                return [eval_ast(y, repl_env) for y in x[1]][-1]
+            
+            elif x[0].name == "if":
+                """
+                Evaluate the first parameter (second element). If the result (condition) is anything other
+                than nil or false, then evaluate the second parameter (third element of the list) and return
+                the result. Otherwise, evaluate the third parameter (fourth element) and return the result. 
+                If condition is false and there is no third parameter, then just return nil.
+                """
+                
+                cond = EVAL(x[1], repl_env)
+                if not isinstance(cond, mal_types.nil) and not isinstance(cond, mal_types.false):
+                    return EVAL(x[2], repl_env)
+                elif len(x) > 3:
+                    return EVAL(x[3], repl_env)
+                else:
+                    return mal_types.nil()
+                
+                
             else:
                 eval_list = eval_ast(x, repl_env)
                 eval_0 = eval_list[0]
@@ -63,15 +75,24 @@ def EVAL(x, repl_env):
 def PRINT(x):
     return printer.pr_str(x)
 
-def rep(x):
+def rep(x, repl_env):
     return PRINT(EVAL(READ(x), repl_env))
 
 def main():
     
+    init_binds = ['+','-','*','/']
+    init_exprs = [lambda a,b: a+b, lambda a,b: a-b, lambda a,b: a*b, lambda a,b: int(a/b)]
+
+    base_env = Env(
+        outer = mal_types.nil, 
+        binds = init_binds, 
+        exprs = init_exprs
+    )
+    
     while True:
         try:
             user_in = input("user> ")
-            res = rep(user_in)
+            res = rep(user_in, base_env)
             print(res)
         except EOFError:
             sys.exit()

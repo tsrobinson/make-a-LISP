@@ -72,5 +72,11 @@ def read_atom(r_obj):
             return String(token[1:-1])
     elif re.match('^:', token):
         return String(token)
+    elif re.match('nil', token):
+        return nil()
+    elif re.match('true', token):
+        return true()
+    elif re.match('false', token):
+        return false()
     else:
         return Symbol(token)

@@ -2,9 +2,12 @@ import mal_types
 
 class Env:
     
-    def __init__(self, outer):
+    def __init__(self, outer, binds, exprs):
         self.outer = outer
         self.data = {}
+        
+        for i, key in enumerate(binds):
+            self.data[key] = exprs[i]
     
     def set(self, key, val):
         self.data[key.name] = val
