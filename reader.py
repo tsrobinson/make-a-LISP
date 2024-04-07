@@ -1,6 +1,8 @@
 import re
 from mal_types import *
 
+OTC = {"(":")", "[":"]", "{":"}"}
+
 class Reader:
     
     def __init__(self, tokens, position=0):
@@ -28,7 +30,7 @@ def tokenize(str_in):
 
 def read_form(r_obj):
     token = r_obj.peek()
-    if token == '(':
+    if token in ['(', '[', '{']:
         return read_list(r_obj)
     else:
         return read_atom(r_obj)
@@ -43,11 +45,11 @@ def read_list(r_obj):
     This mutually recursive definition between read_list and read_form is what allows lists to contain lists.
     """
     out = []
-    _ = r_obj.next()
-    while r_obj.peek() != ')':
+    b = r_obj.next()
+    while r_obj.peek() != OTC[b]:
         out.append(read_form(r_obj))
-
-    return out
+    _ = r_obj.next()
+    return Array(out,b)
 
 def read_atom(r_obj):
     """
@@ -70,6 +72,8 @@ def read_atom(r_obj):
             raise ValueError("String missing closing quote")
         else:
             return String(token[1:-1])
+    elif re.match('^:', token):
+        return String(token)
     else:
         pass
     

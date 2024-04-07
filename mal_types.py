@@ -36,7 +36,24 @@ class String:
     """    
     def __init__(self, value):
         
+        if value[0] == ":":
+            value = u"0x29E" + value
+        
         value.replace('\\"', '"')
         value.replace('\\n', '\n')
         value.replace('\\\\', '\\')
         self.value = value
+
+class Array(list):
+    
+    def __init__(self, x, bracket):
+        super().__init__(x)
+                
+        if bracket == "(":
+            self.type = "list"
+        elif bracket == "[":
+            self.type = "vector"
+        elif bracket == "{":
+            self.type = "hash-map"
+        else:
+            raise ValueError("Invalid array type")
