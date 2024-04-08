@@ -114,8 +114,12 @@ def main():
     while True:
         try:
             user_in = input("user> ")
-            res = rep(user_in, base_env)
-            print(res)
+            if user_in == "quit":
+                break
+            elif user_in == "":
+                continue
+            else:
+                print(rep(user_in, base_env))
         except EOFError:
             sys.exit()
         

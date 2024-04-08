@@ -8,7 +8,11 @@ def pr_str(mal_obj, print_readably = True):
     elif isinstance(mal_obj, mal_types.Symbol):
         return mal_obj.name
     elif isinstance(mal_obj, mal_types.String):
-        return '"' + mal_obj.value + '"'
+        if print_readably:
+            string_value = mal_obj.value.replace('\\', '\\\\').replace('"', '\\"').replace('\n', '\\n')
+            return '"' + string_value + '"'
+        else:
+            return '"' + mal_obj.value + '"'
     elif isinstance(mal_obj, mal_types.Array):
         if mal_obj.type == "list":
             return "(" + " ".join([pr_str(x) for x in mal_obj]) + ")"
@@ -23,4 +27,3 @@ def pr_str(mal_obj, print_readably = True):
             return "true"
         else:
             return "false"
-        
