@@ -8,7 +8,11 @@ class Env:
         self.data = {}
         
         for i, key in enumerate(binds):
-            self.data[key] = exprs[i]
+            
+            if key == "&":
+                self.data[binds[i+1]] = mal_types.Array(exprs[i:], "list")
+            else:
+                self.data[key] = exprs[i]
     
     def set(self, key, val):
         self.data[key.name] = val
