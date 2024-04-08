@@ -3,6 +3,7 @@ import reader
 import printer
 import mal_types
 from env import Env
+import core
 
 def READ(x):
     return(reader.read_str(x))
@@ -104,13 +105,10 @@ def rep(x, repl_env):
 
 def main():
     
-    init_binds = ['+','-','*','/']
-    init_exprs = [lambda a,b: a+b, lambda a,b: a-b, lambda a,b: a*b, lambda a,b: int(a/b)]
-
     base_env = Env(
         outer = mal_types.nil, 
-        binds = init_binds, 
-        exprs = init_exprs
+        binds = core.ns.keys(), 
+        exprs = list(core.ns.values()),
     )
     
     while True:

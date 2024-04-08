@@ -1,6 +1,6 @@
 import mal_types
 
-def pr_str(mal_obj):    
+def pr_str(mal_obj, print_readably = True):    
     if isinstance(mal_obj, int):
         return str(mal_obj)
     elif callable(mal_obj):
