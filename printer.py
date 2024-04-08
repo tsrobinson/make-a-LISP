@@ -3,11 +3,10 @@ import mal_types
 def pr_str(mal_obj):    
     if isinstance(mal_obj, int):
         return str(mal_obj)
+    elif callable(mal_obj):
+        return "#<function>"
     elif isinstance(mal_obj, mal_types.Symbol):
-        if mal_obj.name == "fn*":
-            return "#<function>"
-        else: 
-            return mal_obj.name
+        return mal_obj.name
     elif isinstance(mal_obj, mal_types.String):
         return '"' + mal_obj.value + '"'
     elif isinstance(mal_obj, mal_types.Array):
