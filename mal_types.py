@@ -5,6 +5,14 @@ class Symbol:
     def __init__(self, name):
         self.name = name
 
+class Function:
+    
+    def __init__(self, x, params, env, fn):
+        self.x = x
+        self.params = params
+        self.env = env
+        self.fn = fn
+
 class nil:
     
     def __init__(self):

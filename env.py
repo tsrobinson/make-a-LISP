@@ -10,7 +10,8 @@ class Env:
         for i, key in enumerate(binds):
             
             if key == "&":
-                self.data[binds[i+1]] = mal_types.Array(exprs[i:], "list")
+                self.data[binds[i+1]] = mal_types.Array(exprs[i:], "(")
+                break
             else:
                 self.data[key] = exprs[i]
     
