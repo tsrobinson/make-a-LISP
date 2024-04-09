@@ -40,6 +40,7 @@ def EVAL(x, repl_env):
                 if isinstance(x[0], mal_types.Symbol):
                     if x[0].name == "def!":
                         repl_env.set(x[1], EVAL(x[2], repl_env))
+                        return mal_types.nil()
                         
                     elif x[0].name == "let*":
                         new_env = Env(repl_env, [], [])
