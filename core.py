@@ -64,6 +64,9 @@ ns = {
     'reset!': reset_atom,
     'swap!': swap_atom,
     
+    'cons': lambda a,b: Array([a]+b,"("),
+    'concat': lambda *args: Array([x for y in args for x in y], "("),
+    
 }
 
 
