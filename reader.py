@@ -32,6 +32,9 @@ def read_form(r_obj):
     token = r_obj.peek()
     if token in ['(', '[', '{']:
         return read_list(r_obj)
+    elif token == "@":
+        r_obj.next()
+        return Array([Symbol("deref"), read_form(r_obj)], "(")
     else:
         return read_atom(r_obj)
     
