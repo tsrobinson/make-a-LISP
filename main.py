@@ -13,7 +13,7 @@ def eval_ast(ast, repl_env):
         try:
             return repl_env.get(ast.name)
         except KeyError:
-            raise Exception(f"Could not find symbol {ast.name} not found in environment")
+            raise Exception(f"Symbol {ast.name} not in environment")
     elif isinstance(ast, list):
         if ast.type == "list":
             return mal_types.Array([EVAL(x, repl_env) for x in ast], "(")
@@ -102,6 +102,12 @@ def main():
     rep("(def! not (fn* (a) (if a false true)))", base_env)
     
     rep('(def! load-file (fn* (f) (eval (read-string (str "(do " (slurp f) "\nnil)")))))', base_env)
+    
+    if len(sys.argv) > 1:
+        
+        rep(f"(def! *ARGV* (list {''.join([f'{x}' for x in sys.argv[2:]])}))", base_env)
+        rep(f'(load-file "{sys.argv[1]}")', base_env)
+        exit()
     
     while True:
         try:
