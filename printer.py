@@ -7,12 +7,12 @@ def pr_str(mal_obj, print_readably = True):
         return "#<function>"
     elif isinstance(mal_obj, mal_types.Symbol):
         return mal_obj.name
-    elif isinstance(mal_obj, mal_types.String):
+    elif isinstance(mal_obj, str):
         if print_readably:
-            string_value = mal_obj.value.replace('\\', '\\\\').replace('"', '\\"').replace('\n', '\\n')
+            string_value = mal_obj.replace('\\', '\\\\').replace('"', '\\"').replace('\n', '\\n')
             return '"' + string_value + '"'
         else:
-            return '"' + mal_obj.value + '"'
+            return  mal_obj
     elif isinstance(mal_obj, mal_types.Array):
         if mal_obj.type == "list":
             return "(" + " ".join([pr_str(x) for x in mal_obj]) + ")"
@@ -20,7 +20,7 @@ def pr_str(mal_obj, print_readably = True):
             return "[" + " ".join([pr_str(x) for x in mal_obj]) + "]"
         elif mal_obj.type == "hash-map":
             return "{" + " ".join([pr_str(x) for x in mal_obj]) + "}"
-    elif isinstance(mal_obj, mal_types.nil):
+    elif mal_obj is None:
         return "nil"
     elif isinstance(mal_obj, mal_types.bool):
         if mal_obj.value:

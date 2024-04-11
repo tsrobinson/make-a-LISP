@@ -1,5 +1,10 @@
 import re
 
+class atom(object):
+    
+    def __init__(self, x):
+        self.reference = x
+
 class Symbol:
     
     def __init__(self, name):
@@ -12,11 +17,6 @@ class Function:
         self.params = params
         self.env = env
         self.fn = fn
-
-class nil:
-    
-    def __init__(self):
-        pass
     
 class bool:
     
@@ -34,23 +34,6 @@ class false(bool):
     def __init__(self):
         super().__init__()
         self.value = False
-    
-class String:
-    """
-    When a string is read, the following transformations are applied: 
-    a backslash followed by a doublequote is translated into a plain doublequote character, 
-    a backslash followed by "n" is translated into a newline, 
-    and a backslash followed by another backslash is translated into a single backslash.
-    """    
-    def __init__(self, value):
-        
-        if value[0] == ":":
-            value = u"0x29E" + value
-        
-        value.replace('\\"', '"')
-        value.replace('\\n', '\n')
-        value.replace('\\\\', '\\')
-        self.value = value
 
 class Array(list):
     

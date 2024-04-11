@@ -25,7 +25,7 @@ def read_str(str_in):
 
 def tokenize(str_in):
     return re.findall(
-        '''[\s,]*(~@|[\[\]{}()'`~^@]|"(?:\\.|[^\\"])*"?|;.*|[^\s\[\]{}('"`,;)]*)''',
+        r'''[\s,]*(~@|[\[\]{}()'`~^@]|"(?:\\.|[^\\"])*"?|;.*|[^\s\[\]{}('"`,;)]*)''',
         str_in,)[:-1]
 
 def read_form(r_obj):
@@ -66,14 +66,11 @@ def read_atom(r_obj):
     if re.match('[0-9]+', token):
         return int(token)
     elif re.match('^"', token):
-        if token[-1] != '"':
-            raise ValueError("String missing closing quote")
-        else:
-            return String(token[1:-1])
+        return token[1:-1].replace('\\\\', '\u029e').replace('\\"', '"').replace('\\n', '\n').replace('\u029e', '\\')
     elif re.match('^:', token):
-        return String(token)
+        return u"0x29E" + token
     elif re.match('nil', token):
-        return nil()
+        return None
     elif re.match('true', token):
         return true()
     elif re.match('false', token):

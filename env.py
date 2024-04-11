@@ -21,7 +21,7 @@ class Env:
     def find(self, key):
         if key in self.data.keys():
             return self
-        elif self.outer is not mal_types.nil:
+        elif self.outer is not None:
             return self.outer.find(key)
         else:
             return None
