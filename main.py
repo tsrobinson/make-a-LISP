@@ -35,7 +35,9 @@ def EVAL(x, repl_env):
         if x == []: # empty list
             return x
         
-        if isinstance(x[0], mal_types.Symbol) and x[0].name == "def!":
+        if isinstance(x, mal_types.Array) and x.type in ['vector','hash-map']:
+            return eval_ast(x, repl_env)
+        elif isinstance(x[0], mal_types.Symbol) and x[0].name == "def!":
             return repl_env.set(x[1], EVAL(x[2], repl_env))
                 
         elif isinstance(x[0], mal_types.Symbol) and x[0].name == "let*":
