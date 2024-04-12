@@ -32,7 +32,7 @@ def EVAL(x, repl_env):
     
         if not isinstance(x, list):
             return eval_ast(x, repl_env)
-        if x in []: # empty list
+        if x == []: # empty list
             return x
         
         if isinstance(x[0], mal_types.Symbol) and x[0].name == "def!":
@@ -71,6 +71,15 @@ def EVAL(x, repl_env):
                 env = repl_env,
                 fn = new_fun,
             )
+            
+        elif isinstance(x[0], mal_types.Symbol) and x[0].name == "quote":
+            return x[1]
+        
+        elif isinstance(x[0], mal_types.Symbol) and x[0].name == "quasiquoteexpand":
+            return core.quasiquote(x[1])
+        
+        elif isinstance(x[0], mal_types.Symbol) and x[0].name == "quasiquote":
+            x = core.quasiquote(x[1])
                
         else: # list where first element is not a symbol i.e. a function/mal_types.Function
             eval_list = eval_ast(x, repl_env)

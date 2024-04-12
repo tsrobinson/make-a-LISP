@@ -1,4 +1,5 @@
 from main import *
+from mal_types import true, false, Array, Symbol, atom
 
 base_env = Env(
         outer = None, 
@@ -12,23 +13,8 @@ rep("(def! not (fn* (a) (if a false true)))", base_env)
 
 rep('''(def! load-file (fn* (f) (eval (read-string (str "(do " (slurp f) "\nnil)")))))''', base_env)
 
-rep('(def! inc3 (fn* (a) (+ 3 a)))', base_env)
+rep('''(def! c (quote (1 "b" "d")))''', base_env)
 
-rep('(def! a (atom 2))', base_env)
+repl_env = base_env
 
-
-rep('(atom? a)', base_env)
-
-
-rep('(atom? 1)', base_env)
-
-rep('(deref a)', base_env)
-
-
-rep('(reset! a 3)', base_env)
-
-rep('(deref a)', base_env)
-
-rep('(swap! a inc3)', base_env)
-
-x = READ('(swap! a inc3)')
+x = READ('(= (quote abc) (quote abc))')

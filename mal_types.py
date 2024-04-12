@@ -9,6 +9,12 @@ class Symbol:
     
     def __init__(self, name):
         self.name = name
+        
+    def __eq__(self, other):
+        if isinstance(other, Symbol) and self.name == other.name:
+            return True
+        else:
+            return False
 
 class Function:
     

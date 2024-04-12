@@ -1,4 +1,4 @@
-from mal_types import true, false, Array,atom
+from mal_types import true, false, Array, Symbol, atom
 from printer import pr_str
 from reader import read_str
 
@@ -15,22 +15,26 @@ def reset_atom(a, val):
     return a.reference
 
 def swap_atom(a, f, *args):
-    """
-    Takes an atom, a function, and zero or more function arguments. 
-    The atom's value is modified to the result of applying the function 
-    with the atom's value as the first argument and the optionally given 
-    function arguments as the rest of the arguments. 
-    The new atom's value is returned. 
-    """
-    
+       
     if callable(f):
         a.reference = f(a.reference, *args)
     else:
         a.reference = f.fn(a.reference, *args)
-    
     return a.reference
     
-    
+def quasiquote(x):
+    if isinstance(x, Array) and len(x) > 0 and isinstance(x[0], Symbol) and x[0].name == "unquote":
+        return x[1]
+    elif isinstance(x, Array) and x.type == "list":
+        res = Array([],"(")
+        for elt in reversed(x):
+            if isinstance(elt, Array) and len(elt) > 0 and isinstance(elt[0], Symbol) and elt[0].name == "splice-unquote":
+                res = Array([Symbol("concat"), elt[1], res],"(")
+            else:
+                res= Array([Symbol("cons"), quasiquote(elt), res], "(")
+        return Array(res, "(")
+    else:
+        return Array([Symbol("quote"), x], "(")
 
 ns = {
     '+': lambda a,b: a+b,

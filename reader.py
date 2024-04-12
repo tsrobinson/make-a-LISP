@@ -35,6 +35,18 @@ def read_form(r_obj):
     elif token == "@":
         r_obj.next()
         return Array([Symbol("deref"), read_form(r_obj)], "(")
+    elif token == "'":
+        r_obj.next()
+        return Array([Symbol("quote"), read_form(r_obj)], "(")
+    elif token == "`":
+        r_obj.next()
+        return Array([Symbol("quasiquote"), read_form(r_obj)], "(")
+    elif token == "~":
+        r_obj.next()
+        return Array([Symbol("unquote"), read_form(r_obj)], "(")
+    elif token == "~@":
+        r_obj.next()
+        return Array([Symbol("splice-unquote"), read_form(r_obj)], "(")
     else:
         return read_atom(r_obj)
     
