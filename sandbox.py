@@ -20,4 +20,5 @@ repl_env = base_env
 rep('(def! nums (list 1 2 3))', repl_env)
 rep('(def! double (fn* (a) (* 2 a)))', repl_env)
 
-x = READ('(map double nums)')
+x = READ('(str "A" {:abc "val"} "Z")')
+e = EVAL(x, repl_env)

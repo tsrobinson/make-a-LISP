@@ -55,3 +55,22 @@ class Array(list):
             self.type = "hash-map"
         else:
             raise ValueError("Invalid array type")
+        
+    def __eq__(self, other):
+        if isinstance(other, Array) and self.type in ["list","vector"] and self.type == other.type and super().__eq__(other):
+            return True
+        elif isinstance(other, Array) and self.type == "hash-map" and self.type == other.type:
+            ans = True
+            for i in range(0, len(self), 2):
+                if (self[i] not in other) or (self[i+1] != other[other.index(self[i])+1]):
+                    ans = False
+                    break
+            
+            if len(self) != len(other):
+                ans = False
+            
+            return ans
+        else:
+            return False
+        
+    

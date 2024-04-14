@@ -8,6 +8,12 @@ def pr_str(mal_obj, print_readably = True):
     elif isinstance(mal_obj, mal_types.Symbol):
         return mal_obj.name
     elif isinstance(mal_obj, str):
+        
+        # keyword special
+        if mal_obj[:5] == "0x29E":
+            return mal_obj[5:]
+        
+        # else
         if print_readably:
             string_value = mal_obj.replace('\\', '\\\\').replace('"', '\\"').replace('\n', '\\n')
             return '"' + string_value + '"'

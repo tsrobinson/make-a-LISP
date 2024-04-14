@@ -105,6 +105,32 @@ def _map(*args):
         res = [f.fn(arg) for arg in arg_vals]
     
     return Array(res, "(")
+
+def _assoc(hash, *args):
+    
+    new_hash = []
+    for i in range(len(hash)):
+        new_hash.append(hash[i])
+        
+    for j in range(0,len(args),2):
+        if args[j] in new_hash:
+            new_hash[new_hash.index(args[j])+1] = args[j+1]
+        else:
+            new_hash.append(args[j])
+            new_hash.append(args[j+1])
+    return Array(new_hash,"{")
+
+def _dissoc(hash, *keys):
+    
+    res = []
+    for i in range(0,len(hash),2):
+        if hash[i] not in keys:
+            res.append(hash[i])
+            res.append(hash[i+1])
+        else:
+            continue
+    return Array(res, "{")
+    
     
     
         
@@ -126,7 +152,7 @@ ns = {
     'count': lambda *args: len(args[0]),
        
     'prn': _prn,
-    'pr-str': lambda *args: "".join([pr_str(x, print_readably=True) for x in args]),
+    'pr-str': lambda *args: " ".join([pr_str(x, print_readably=True) for x in args]),
     'str': lambda *args: "".join([pr_str(x, print_readably=False) for x in args]),
     'println': lambda *args: _println(*args),
     
@@ -156,7 +182,22 @@ ns = {
     'true?': lambda a: true() if isinstance(a, true) else false(),
     'false?': lambda a: true() if isinstance(a, false) else false(),
     'symbol?': lambda a: true() if isinstance(a, Symbol) else false(),
-
+        
+    'symbol': lambda a: Symbol(a),
+    'keyword': lambda a: u"0x29E" + a if a[0] != u"0x29E" else a,
+    'keyword?': lambda a: true() if isinstance(a, str) and a.startswith(u"0x29E") else false(),
+    'vector': lambda *args: Array(args, "["),
+    'vector?': lambda a: true() if isinstance(a, Array) and a.type == "vector" else false(),
+    'sequential?': lambda a: true() if isinstance(a, Array) and a.type in ["vector","list"] else false(),
+    'hash-map': lambda *args: Array(args, "{"),
+    'map?': lambda a: true() if isinstance(a, Array) and a.type == "hash-map" else false(),
+    'assoc': _assoc,
+    'dissoc': _dissoc,
+    'get': lambda hash, key: hash[hash.index(key)+1] if isinstance(hash, Array) and key in hash else None,
+    'contains?': lambda hash, key: true() if key in hash else false(),
+    'keys': lambda hash: Array(hash[::2],"("),
+    'vals': lambda hash: Array(hash[1::2],"("),
+    
 }
 
 
