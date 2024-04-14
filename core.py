@@ -33,8 +33,12 @@ def quasiquote(x):
             else:
                 res= Array([Symbol("cons"), quasiquote(elt), res], "(")
         return Array(res, "(")
-    else:
+    elif isinstance(x, Array) and x.type == "vector":
+        return Array([Symbol("vec"),quasiquote(Array(x,"("))],"(")
+    elif isinstance(x, Array) and x.type == "hash-map" or isinstance(x, Symbol):
         return Array([Symbol("quote"), x], "(")
+    else:
+        return x
 
 ns = {
     '+': lambda a,b: a+b,
@@ -70,6 +74,8 @@ ns = {
     
     'cons': lambda a,b: Array([a]+b,"("),
     'concat': lambda *args: Array([x for y in args for x in y], "("),
+    
+    'vec': lambda a: Array(a, "["),
     
 }
 

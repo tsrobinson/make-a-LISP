@@ -17,4 +17,6 @@ rep('''(def! c (quote (1 "b" "d")))''', base_env)
 
 repl_env = base_env
 
-x = READ('(cons [1] [2 3])')
+s = '`[unquote 0]'
+x = READ(s)
+rep(s, base_env)
