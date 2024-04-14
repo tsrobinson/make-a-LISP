@@ -18,11 +18,12 @@ class Symbol:
 
 class Function:
     
-    def __init__(self, x, params, env, fn):
+    def __init__(self, x, params, env, fn, is_macro = False):
         self.x = x
         self.params = params
         self.env = env
         self.fn = fn
+        self.is_macro = is_macro
     
 class bool:
     

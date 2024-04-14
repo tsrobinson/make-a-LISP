@@ -29,7 +29,9 @@ def eval_ast(ast, repl_env):
 def EVAL(x, repl_env):
     
     while True:
-    
+        
+        x = core.macroexpand(x, repl_env)
+        
         if not isinstance(x, list):
             return eval_ast(x, repl_env)
         if x == []: # empty list
@@ -37,8 +39,17 @@ def EVAL(x, repl_env):
         
         if isinstance(x, mal_types.Array) and x.type in ['vector','hash-map']:
             return eval_ast(x, repl_env)
+              
         elif isinstance(x[0], mal_types.Symbol) and x[0].name == "def!":
             return repl_env.set(x[1], EVAL(x[2], repl_env))
+        
+        elif isinstance(x[0], mal_types.Symbol) and x[0].name == "defmacro!":
+            
+            val = EVAL(x[2], repl_env)
+            if isinstance(val, mal_types.Function):
+                val.is_macro = True
+            
+            return repl_env.set(x[1], val)
                 
         elif isinstance(x[0], mal_types.Symbol) and x[0].name == "let*":
             new_env = Env(repl_env, [], [])
@@ -82,6 +93,9 @@ def EVAL(x, repl_env):
         
         elif isinstance(x[0], mal_types.Symbol) and x[0].name == "quasiquote":
             x = core.quasiquote(x[1])
+            
+        elif isinstance(x[0], mal_types.Symbol) and x[0].name == "macroexpand":
+            return core.macroexpand(x[1], repl_env)
                
         else: # list where first element is not a symbol i.e. a function/mal_types.Function
             eval_list = eval_ast(x, repl_env)
@@ -119,8 +133,10 @@ def main():
         rep(f"(def! *ARGV* (list {''.join([f'{x}' for x in sys.argv[2:]])}))", base_env)
         rep(f'(load-file "{sys.argv[1]}")', base_env)
         exit()
+        
+    _run = True
     
-    while True:
+    while _run:
         try:
             user_in = input("user> ")
             if user_in == "quit":

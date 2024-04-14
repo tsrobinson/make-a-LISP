@@ -1,4 +1,4 @@
-from mal_types import true, false, Array, Symbol, atom
+from mal_types import true, false, Array, Symbol, atom, Function 
 from printer import pr_str
 from reader import read_str
 
@@ -42,6 +42,34 @@ def quasiquote(x):
         return Array([Symbol("quote"), x], "(")
     else:
         return x
+    
+def is_macro_call(x, env):
+    
+    if not isinstance(x, Array):
+        call = False
+    elif x.type != "list" or len(x) < 1:
+        call = False
+    elif not isinstance(x[0], Symbol):
+        call = False
+    elif env.find(x[0].name) is None:
+        call = False
+    elif not isinstance(env.get(x[0].name), Function):
+        call = False
+    elif not env.get(x[0].name).is_macro:
+        call = False
+    else:
+        call = True
+    
+    return call
+
+def macroexpand(x, env):
+    
+    while is_macro_call(x, env):
+        macro = env.get(x[0].name)
+        x = macro.fn(*x[1:])
+        
+    return x
+
 
 ns = {
     '+': lambda a,b: a+b,

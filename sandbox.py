@@ -17,6 +17,7 @@ rep('''(def! c (quote (1 "b" "d")))''', base_env)
 
 repl_env = base_env
 
-s = '`[unquote 0]'
-x = READ(s)
-rep(s, base_env)
+
+rep("(defmacro! a (fn* (b) (+ b 1)))", repl_env)
+x = READ('(a 1)')
+core.is_macro_call(x, repl_env)
