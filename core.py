@@ -21,20 +21,23 @@ def swap_atom(a, f, *args):
     else:
         a.reference = f.fn(a.reference, *args)
     return a.reference
+
+def _qq_expand(x):
+    res = Array([],"(")
+    for elt in reversed(x):
+        if isinstance(elt, Array) and len(elt) > 0 and isinstance(elt[0], Symbol) and elt[0].name == "splice-unquote":
+            res = Array([Symbol("concat"), elt[1], res],"(")
+        else:
+            res= Array([Symbol("cons"), quasiquote(elt), res], "(")
+    return Array(res, "(")
     
 def quasiquote(x):
-    if isinstance(x, Array) and len(x) > 0 and isinstance(x[0], Symbol) and x[0].name == "unquote":
+    if isinstance(x, Array) and x.type == "vector":
+        return Array([Symbol("vec"), _qq_expand(Array(x,"("))],"(")
+    elif isinstance(x, Array) and len(x) > 0 and isinstance(x[0], Symbol) and x[0].name == "unquote":
         return x[1]
     elif isinstance(x, Array) and x.type == "list":
-        res = Array([],"(")
-        for elt in reversed(x):
-            if isinstance(elt, Array) and len(elt) > 0 and isinstance(elt[0], Symbol) and elt[0].name == "splice-unquote":
-                res = Array([Symbol("concat"), elt[1], res],"(")
-            else:
-                res= Array([Symbol("cons"), quasiquote(elt), res], "(")
-        return Array(res, "(")
-    elif isinstance(x, Array) and x.type == "vector":
-        return Array([Symbol("vec"),quasiquote(Array(x,"("))],"(")
+        return _qq_expand(x)
     elif isinstance(x, Array) and x.type == "hash-map" or isinstance(x, Symbol):
         return Array([Symbol("quote"), x], "(")
     else:
