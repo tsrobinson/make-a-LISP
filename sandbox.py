@@ -17,7 +17,7 @@ rep('''(def! c (quote (1 "b" "d")))''', base_env)
 
 repl_env = base_env
 
+rep('(def! nums (list 1 2 3))', repl_env)
+rep('(def! double (fn* (a) (* 2 a)))', repl_env)
 
-rep("(defmacro! a (fn* (b) (+ b 1)))", repl_env)
-x = READ('(a 1)')
-core.is_macro_call(x, repl_env)
+x = READ('(map double nums)')

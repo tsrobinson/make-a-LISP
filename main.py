@@ -15,7 +15,7 @@ def eval_ast(ast, repl_env):
         except KeyError:
             raise Exception(f"Symbol {ast.name} not in environment")
     elif isinstance(ast, list):
-        if ast.type == "list":
+        if not isinstance(ast, mal_types.Array) or ast.type == "list":
             return mal_types.Array([EVAL(x, repl_env) for x in ast], "(")
         elif ast.type == "vector":
             return mal_types.Array([EVAL(x, repl_env) for x in ast], "[")
@@ -96,6 +96,17 @@ def EVAL(x, repl_env):
             
         elif isinstance(x[0], mal_types.Symbol) and x[0].name == "macroexpand":
             return core.macroexpand(x[1], repl_env)
+        
+        elif isinstance(x[0], mal_types.Symbol) and x[0].name == "try*":
+            
+            try: 
+                x = EVAL(x[1], repl_env)
+            except Exception as e:
+                if x[2][0] == mal_types.Symbol("catch*"):
+                    new_env = Env(repl_env, [x[2][1].name], [e])
+                    x = EVAL(x[2][2], new_env)
+                else:
+                    raise Exception("Invalid try* form")
                
         else: # list where first element is not a symbol i.e. a function/mal_types.Function
             eval_list = eval_ast(x, repl_env)

@@ -75,8 +75,39 @@ def _rest(l):
         return Array([], "(")
     else:
         return Array(l[1:], "[" if l.type == "vector" else "(")
+    
+def _raise_exception(a):
+    raise Exception(a)
+    
+def _apply(f, *args):
+    
+    arg_list = []
+    for arg in args:
+        if isinstance(arg, list):
+            for ar in arg:
+                arg_list.append(ar)
+        else:
+            arg_list.append(arg)
+            
+    if callable(f):
+        return f(*arg_list)
+    else:
+        return f.fn(*arg_list)
 
-
+def _map(*args):
+    
+    f = args[0]
+    arg_vals = args[1]
+    
+    if callable(f):
+        res = [f(arg) for arg in arg_vals]
+    else:
+        res = [f.fn(arg) for arg in arg_vals]
+    
+    return Array(res, "(")
+    
+    
+        
 ns = {
     '+': lambda a,b: a+b,
     '-': lambda a,b: a-b,
@@ -102,7 +133,6 @@ ns = {
     'read-string': lambda a: read_str(a),
     'slurp': lambda a: open(a, "r").read(),
     
-    
     'atom': lambda val: atom(val),
     'atom?': lambda a: true() if isinstance(a, atom) else false(),
     'deref': lambda a: a.reference,
@@ -118,6 +148,15 @@ ns = {
     'first': lambda l: l[0] if len(l) > 0 else None,
     'rest' : _rest,
     
+    'throw': _raise_exception,
+    'apply': _apply,
+    'map': _map,
+    
+    'nil?': lambda a: true() if a == None else false(),
+    'true?': lambda a: true() if isinstance(a, true) else false(),
+    'false?': lambda a: true() if isinstance(a, false) else false(),
+    'symbol?': lambda a: true() if isinstance(a, Symbol) else false(),
+
 }
 
 

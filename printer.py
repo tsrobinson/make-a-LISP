@@ -3,7 +3,7 @@ import mal_types
 def pr_str(mal_obj, print_readably = True):    
     if isinstance(mal_obj, int):
         return str(mal_obj)
-    elif callable(mal_obj):
+    elif callable(mal_obj) or isinstance(mal_obj, mal_types.Function):
         return "#<function>"
     elif isinstance(mal_obj, mal_types.Symbol):
         return mal_obj.name
@@ -27,3 +27,5 @@ def pr_str(mal_obj, print_readably = True):
             return "true"
         else:
             return "false"
+    else:
+        return str(mal_obj)

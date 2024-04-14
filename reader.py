@@ -94,11 +94,11 @@ def read_atom(r_obj):
         return token[1:-1].replace('\\\\', '\u029e').replace('\\"', '"').replace('\\n', '\n').replace('\u029e', '\\')
     elif re.match('^:', token):
         return u"0x29E" + token
-    elif re.match('nil', token):
+    elif re.match('nil$', token):
         return None
-    elif re.match('true', token):
+    elif re.match('true$', token):
         return true()
-    elif re.match('false', token):
+    elif re.match('false$', token):
         return false()
     else:
         return Symbol(token)
