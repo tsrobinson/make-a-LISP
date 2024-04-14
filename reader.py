@@ -19,14 +19,24 @@ class Reader:
     
 def read_str(str_in):
     tokens = tokenize(str_in)
-    r_obj = Reader(tokens)
-    return read_form(r_obj)
+    
+    if len(tokens) == 0:
+        return None
+    else:
+        r_obj = Reader(tokens)
+        return read_form(r_obj)
     
 
 def tokenize(str_in):
-    return re.findall(
+    tokens = re.findall(
         r'''[\s,]*(~@|[\[\]{}()'`~^@]|"(?:\\.|[^\\"])*"?|;.*|[^\s\[\]{}('"`,;)]*)''',
         str_in,)[:-1]
+
+    for token in tokens:
+        if token[0] == ";":
+            tokens.remove(token)
+            
+    return tokens
 
 def read_form(r_obj):
     token = r_obj.peek()

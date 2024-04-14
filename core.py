@@ -2,19 +2,19 @@ from mal_types import true, false, Array, Symbol, atom, Function
 from printer import pr_str
 from reader import read_str
 
-def prn(*args):
+def _prn(*args):
     print(" ".join([pr_str(x) for x in args]))
     return None
 
-def println(*args):
+def _println(*args):
     print(" ".join([pr_str(x, print_readably=False) for x in args]))
     return None
 
-def reset_atom(a, val):
+def _reset_atom(a, val):
     a.reference = val
     return a.reference
 
-def swap_atom(a, f, *args):
+def _swap_atom(a, f, *args):
        
     if callable(f):
         a.reference = f(a.reference, *args)
@@ -70,6 +70,12 @@ def macroexpand(x, env):
         
     return x
 
+def _rest(l):
+    if l == [] or (l is None):
+        return Array([], "(")
+    else:
+        return Array(l[1:], "[" if l.type == "vector" else "(")
+
 
 ns = {
     '+': lambda a,b: a+b,
@@ -88,10 +94,10 @@ ns = {
     'empty?': lambda *args: true() if args[0] == [] else false(),
     'count': lambda *args: len(args[0]),
        
-    'prn': prn,
+    'prn': _prn,
     'pr-str': lambda *args: "".join([pr_str(x, print_readably=True) for x in args]),
     'str': lambda *args: "".join([pr_str(x, print_readably=False) for x in args]),
-    'println': lambda *args: println(*args),
+    'println': lambda *args: _println(*args),
     
     'read-string': lambda a: read_str(a),
     'slurp': lambda a: open(a, "r").read(),
@@ -100,13 +106,17 @@ ns = {
     'atom': lambda val: atom(val),
     'atom?': lambda a: true() if isinstance(a, atom) else false(),
     'deref': lambda a: a.reference,
-    'reset!': reset_atom,
-    'swap!': swap_atom,
+    'reset!': _reset_atom,
+    'swap!': _swap_atom,
     
     'cons': lambda a,b: Array([a]+b,"("),
     'concat': lambda *args: Array([x for y in args for x in y], "("),
     
     'vec': lambda a: Array(a, "["),
+    
+    'nth': lambda l, i: l[i],
+    'first': lambda l: l[0] if len(l) > 0 else None,
+    'rest' : _rest,
     
 }
 

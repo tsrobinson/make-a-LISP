@@ -111,8 +111,16 @@ def EVAL(x, repl_env):
 def PRINT(x):
     return printer.pr_str(x)
 
+class CommentError(Exception):
+    pass
+
 def rep(x, repl_env):
-    return PRINT(EVAL(READ(x), repl_env))
+    
+    x = READ(x)
+    if x is None:
+        raise CommentError("")
+    else:
+        return PRINT(EVAL(x, repl_env))
 
 def main():
     
@@ -127,6 +135,9 @@ def main():
     rep("(def! not (fn* (a) (if a false true)))", base_env)
     
     rep('(def! load-file (fn* (f) (eval (read-string (str "(do " (slurp f) "\nnil)")))))', base_env)
+    
+    rep("(defmacro! cond (fn* (& xs) (if (> (count xs) 0) (list 'if (first xs) (if (> (count xs) 1) (nth xs 1) (throw \"odd number of forms to cond\")) (cons 'cond (rest (rest xs)))))))",
+        base_env)
     
     if len(sys.argv) > 1:
         
@@ -144,9 +155,12 @@ def main():
             elif user_in == "":
                 continue
             else:
-                print(rep(user_in, base_env))
+                out = rep(user_in, base_env)
+                print(out)
         except EOFError:
             sys.exit()
+        except CommentError:
+            continue
         
 if __name__ == "__main__":
     main()
