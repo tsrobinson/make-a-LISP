@@ -1,3 +1,13 @@
-(def! inc4 (fn* (a) (+ 4 a)))
+;; a test comment
 
-(prn (inc4 5))
+(def! 
+    inc4 
+        (fn* 
+            (a) 
+            (+ 4 a)))
+
+(prn 
+    (
+        inc4 5
+    )
+)

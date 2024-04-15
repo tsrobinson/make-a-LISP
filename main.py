@@ -45,7 +45,7 @@ def EVAL(x, repl_env):
         
         elif isinstance(x[0], mal_types.Symbol) and x[0].name == "defmacro!":
             
-            val = EVAL(x[2], repl_env)
+            val = core._clone(EVAL(x[2], repl_env))
             if isinstance(val, mal_types.Function):
                 val.is_macro = True
             
@@ -142,6 +142,7 @@ def main():
     )
         
     base_env.set(mal_types.Symbol("eval"), lambda a: EVAL(a, base_env))
+    base_env.set(mal_types.Symbol("*host-language*"), "Python 3.X")
     
     rep("(def! not (fn* (a) (if a false true)))", base_env)
     
@@ -157,8 +158,9 @@ def main():
         exit()
         
     _run = True
-    
+    rep('(println (str "Mal [" *host-language* "]"))', base_env)
     while _run:
+        
         try:
             user_in = input("user> ")
             if user_in == "quit":

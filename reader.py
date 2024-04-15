@@ -30,12 +30,12 @@ def read_str(str_in):
 def tokenize(str_in):
     tokens = re.findall(
         r'''[\s,]*(~@|[\[\]{}()'`~^@]|"(?:\\.|[^\\"])*"?|;.*|[^\s\[\]{}('"`,;)]*)''',
-        str_in,)[:-1]
+        str_in)[:-1]
 
     for token in tokens:
-        if token[0] == ";":
+        if re.match("^;", token) or token[0] == ";":
             tokens.remove(token)
-            
+    
     return tokens
 
 def read_form(r_obj):
@@ -57,7 +57,12 @@ def read_form(r_obj):
     elif token == "~@":
         r_obj.next()
         return Array([Symbol("splice-unquote"), read_form(r_obj)], "(")
+    elif token == "^":
+        r_obj.next()
+        meta = read_form(r_obj)
+        return Array([Symbol("with-meta"), read_form(r_obj), meta], "(")
     else:
+        
         return read_atom(r_obj)
     
 
@@ -88,7 +93,9 @@ def read_atom(r_obj):
     
     token = r_obj.next()
     
-    if re.match('[0-9]+', token):
+    if re.match('[-]*[0-9]+\.[0-9]*', token):
+        return float(token)
+    elif re.match('[-]*[0-9]+', token):
         return int(token)
     elif re.match('^"', token):
         return token[1:-1].replace('\\\\', '\u029e').replace('\\"', '"').replace('\\n', '\n').replace('\u029e', '\\')

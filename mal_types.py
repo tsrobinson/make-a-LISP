@@ -24,6 +24,7 @@ class Function:
         self.env = env
         self.fn = fn
         self.is_macro = is_macro
+        self.metadata = None
     
 class bool:
     
@@ -46,7 +47,7 @@ class Array(list):
     
     def __init__(self, x, bracket):
         super().__init__(x)
-                
+        self.metadata = None
         if bracket == "(":
             self.type = "list"
         elif bracket == "[":

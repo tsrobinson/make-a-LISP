@@ -1,13 +1,16 @@
 from mal_types import true, false, Array, Symbol, atom, Function 
 from printer import pr_str
-from reader import read_str
+import reader
+from time import time
+
+import copy
 
 def _prn(*args):
-    print(" ".join([pr_str(x) for x in args]))
+    print(' '.join([pr_str(x) for x in args]))
     return None
 
 def _println(*args):
-    print(" ".join([pr_str(x, print_readably=False) for x in args]))
+    print(' '.join([pr_str(x, print_readably=False) for x in args]))
     return None
 
 def _reset_atom(a, val):
@@ -131,8 +134,58 @@ def _dissoc(hash, *keys):
             continue
     return Array(res, "{")
     
+def _readline(s):
+    try:
+        return input(s)
+    except EOFError:
+        return None
     
+def _clone(a):
+    if isinstance(a, Function):
+        c = Function(
+            copy.deepcopy(a.x), 
+            copy.deepcopy(a.params), 
+            copy.deepcopy(a.env), 
+            copy.deepcopy(a.fn), 
+            copy.deepcopy(a.is_macro)
+        )
+    elif callable(a):
+        c = lambda: a
+    else:
+        c = copy.deepcopy(a)
     
+    return c
+    
+def _with_meta(a, b):
+    c = _clone(a)
+    c.metadata = b
+    return c
+
+def _seq(a):
+    
+    if (isinstance(a, Array) and a.type != "hash-map" and len(a) == 0) or a == "" or a is None:
+        return None
+    elif isinstance(a, Array) and a.type == "list":
+        return a
+    elif isinstance(a, Array) and a.type == "vector":
+        return Array(a, "(")
+    elif isinstance(a, str):
+        return Array([x for x in a], "(")
+    else:
+        raise Exception("Not implemented")
+    
+def _conj(a, *args):
+    
+    if isinstance(a, Array) and a.type == "list":
+        return Array([b for b in reversed(args)] + a,"(")
+    elif isinstance(a, Array) and a.type == "vector":
+        
+        if not isinstance(args, Array):
+            args = Array(args, "[")
+        
+        return Array(a + args, "[")
+    else:
+        raise Exception("Not implemented")
         
 ns = {
     '+': lambda a,b: a+b,
@@ -148,15 +201,15 @@ ns = {
     
     'list': lambda *args: Array(args, "("),
     'list?': lambda *args:true() if isinstance(args[0], list) else false(),
-    'empty?': lambda *args: true() if args[0] == [] else false(),
+    'empty?': lambda *args: true() if len(Array(args[0],"(")) == 0 else false(),
     'count': lambda *args: len(args[0]),
        
     'prn': _prn,
-    'pr-str': lambda *args: " ".join([pr_str(x, print_readably=True) for x in args]),
-    'str': lambda *args: "".join([pr_str(x, print_readably=False) for x in args]),
+    'pr-str': lambda *args: ' '.join([pr_str(x, print_readably=True) for x in args]),
+    'str': lambda *args: ''.join([pr_str(x, print_readably=False) for x in args]),
     'println': lambda *args: _println(*args),
     
-    'read-string': lambda a: read_str(a),
+    'read-string': reader.read_str,
     'slurp': lambda a: open(a, "r").read(),
     
     'atom': lambda val: atom(val),
@@ -198,6 +251,17 @@ ns = {
     'keys': lambda hash: Array(hash[::2],"("),
     'vals': lambda hash: Array(hash[1::2],"("),
     
+    'readline': _readline,
+    'time-ms': lambda: round(time() * 1000),
+    'meta': lambda a: a.metadata if hasattr(a, "metadata") else None,
+    'with-meta': _with_meta,
+    'fn?': lambda a: true() if (isinstance(a, Function) and not a.is_macro) or callable(a) else false(),
+    'macro?': lambda a: true() if isinstance(a, Function) and a.is_macro else false(),
+    'string?': lambda a: true() if isinstance(a, str) and not a.startswith(u"0x29E") else false(),
+    'number?': lambda a: true() if isinstance(a, (int, float, complex)) else false(),
+    'seq': _seq,
+    'conj': _conj,
 }
+
 
 
