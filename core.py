@@ -261,6 +261,7 @@ ns = {
     'number?': lambda a: true() if isinstance(a, (int, float, complex)) else false(),
     'seq': _seq,
     'conj': _conj,
+    
 }
 
 

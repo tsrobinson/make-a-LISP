@@ -1,9 +1,12 @@
 import sys
+import readline
+
 import reader
 import printer
 import mal_types
 from env import Env
 import core
+
 
 def READ(x):
     return(reader.read_str(x))
