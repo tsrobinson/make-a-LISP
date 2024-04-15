@@ -1,6 +1,6 @@
 ;; Some inefficient arithmetic computations for benchmarking.
 
-;; Compute n(n+1)/2 with a non tail-recursive call.
+;; this second comment did not work and now it does!
 
 (def! sumdown
   (fn* [n]                              
@@ -15,3 +15,4 @@
     (if (<= n 1)
       n
       (+ (fib (- n 1)) (fib (- n 2))))))
+

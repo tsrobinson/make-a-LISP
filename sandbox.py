@@ -18,8 +18,9 @@ rep('''(def! c (quote (1 "b" "d")))''', base_env)
 
 repl_env = base_env
 
-str_in = rep('''(str "(do " (slurp "tests/computations.mal") "\nnil)"))''', repl_env)
-t = reader.tokenize(str_in)
+str_in = rep('(read-string ";; this comment \n ;; and this comment \n (+ 1 1)")', repl_env)
+
+t = reader.tokenize(";; this comment \n ;; and this comment \n (+ 1 1)")
 
 
 str_in = rep('''(read-string (str "(do " (slurp "tests/computations.mal") "\nnil)")))''', repl_env)
@@ -27,3 +28,4 @@ str_in = rep('''(read-string (str "(do " (slurp "tests/computations.mal") "\nnil
 
 
 x = rep('''(eval (read-string (str "(do " (slurp "tests/computations.mal") "\nnil)")))''', repl_env)
+

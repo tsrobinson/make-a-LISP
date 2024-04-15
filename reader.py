@@ -32,11 +32,12 @@ def tokenize(str_in):
         r'''[\s,]*(~@|[\[\]{}()'`~^@]|"(?:\\.|[^\\"])*"?|;.*|[^\s\[\]{}('"`,;)]*)''',
         str_in)[:-1]
 
+    cleaned_tokens = []
     for token in tokens:
-        if re.match("^;", token) or token[0] == ";":
-            tokens.remove(token)
-    
-    return tokens
+        if not re.match("^;", token) and token[0] != ";":
+            cleaned_tokens.append(token)
+
+    return cleaned_tokens
 
 def read_form(r_obj):
     token = r_obj.peek()
