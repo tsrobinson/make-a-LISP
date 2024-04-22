@@ -6,4 +6,4 @@ The REPL is implemented in `main.py`, including command-line functionality.
 
 * `python3 main.py` initiates the REPL
   
-* `python3 main.py <filename>` reads and evaluates the file
+* `python3 main.py <filename>.mal` reads and evaluates a .mal script 
